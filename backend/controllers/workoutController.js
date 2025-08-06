@@ -33,7 +33,6 @@ const updateWorkout = async (req, res) => {
       return res.status(404).json({ message: "Workout not found" });
     }
 
-    // Action: Add a new exercise
     if (action === "addExercise") {
       workout.exercises.push({
         UserExerciseId: req.body.UserExerciseId,
@@ -42,7 +41,6 @@ const updateWorkout = async (req, res) => {
       });
     }
 
-    // Action: Add a set to a specific exercise
     if (action === "addSet") {
       const { exerciseId, set } = req.body;
       const exercise = workout.exercises.id(exerciseId);
@@ -53,8 +51,20 @@ const updateWorkout = async (req, res) => {
 
       exercise.sets.push(set);
     }
+    if (action === "updateSet") {
+  const { exerciseId, setId, reps, weight } = req.body;
 
-    // Action: Update notes for a specific exercise
+  const exercise = workout.exercises.id(exerciseId);
+  if (!exercise) return res.status(404).json({ message: "Exercise not found" });
+
+  const set = exercise.sets.id(setId);
+  if (!set) return res.status(404).json({ message: "Set not found" });
+
+  if (reps !== undefined) set.reps = reps;
+  if (weight !== undefined) set.weight = weight;
+}
+
+
     if (action === "updateNotes") {
       const { exerciseId, notes } = req.body;
       const exercise = workout.exercises.id(exerciseId);
