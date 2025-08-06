@@ -1,0 +1,78 @@
+const Workout = require("../models/workout.model.js")
+
+const createWorkout = async(req, res) =>{
+    
+    try {
+        const trainerId = req.user.id
+        const clientId = req.params.clientId
+        const {date}= req.body
+
+        const workout = await Workout.create({
+            trainerId,
+            clientId,
+            date,
+            exercises:[]
+        })
+        res.status(201).json(workout)
+    } catch (error) {
+        res.status(500).json({message:error.message})
+    }
+}
+const updateWorkout = async (req, res) => {
+  try {
+    const { clientId, workoutId } = req.params;
+    const trainerId = req.user.id;
+    const { action } = req.body;
+
+    if (!action) {
+      return res.status(400).json({ message: "Action is required" });
+    }
+
+    const workout = await Workout.findOne({ _id: workoutId, clientId, trainerId });
+    if (!workout) {
+      return res.status(404).json({ message: "Workout not found" });
+    }
+
+    // Action: Add a new exercise
+    if (action === "addExercise") {
+      workout.exercises.push({
+        UserExerciseId: req.body.UserExerciseId,
+        sets: [],
+        notes: ""
+      });
+    }
+
+    // Action: Add a set to a specific exercise
+    if (action === "addSet") {
+      const { exerciseId, set } = req.body;
+      const exercise = workout.exercises.id(exerciseId);
+
+      if (!exercise) {
+        return res.status(404).json({ message: "Exercise not found" });
+      }
+
+      exercise.sets.push(set);
+    }
+
+    // Action: Update notes for a specific exercise
+    if (action === "updateNotes") {
+      const { exerciseId, notes } = req.body;
+      const exercise = workout.exercises.id(exerciseId);
+
+      if (!exercise) {
+        return res.status(404).json({ message: "Exercise not found" });
+      }
+
+      exercise.notes = notes;
+    }
+
+    await workout.save();
+    res.status(200).json(workout);
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+module.exports = {createWorkout, updateWorkout}

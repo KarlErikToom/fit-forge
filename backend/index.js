@@ -11,7 +11,7 @@ app.get("/", (req, res) => {
   res.send("Hello from Node API server");
 });
 app.use("/api/auth", authRoutes)
-app.use("/api/client", clientRoutes)
+app.use("/api/clients", clientRoutes)
 app.use("/api/globalExercise", globalExerciseRoutes)
 
 mongoose
