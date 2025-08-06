@@ -1,6 +1,7 @@
 const User = require("../models/user.model")
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcryptjs")
+const { insertGlobalExercisesForUser } = require("../utils/insertGlobalExercisesForUser")
 
 
 const createToken= (userId) =>{
@@ -14,6 +15,8 @@ exports.signUp = async (req, res) =>{
         const {name, email, password} = req.body;
         const user = await User.create({name, email, password})
         const token = createToken(user._id);
+
+        await insertGlobalExercisesForUser(user._id)
         res.status(201).json({userId: user._id, token})
     } catch (error) {
         res.status(400).json({message:error.message})

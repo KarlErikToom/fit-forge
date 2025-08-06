@@ -2,7 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 require('dotenv').config();
 const authRoutes = require("./routes/authRoutes");
-const clientRoutes = require("./routes/clientRoutes")
+const clientRoutes = require("./routes/clientRoutes");
+const globalExerciseRoutes = require("./routes/globalExerciseRoutes")
 const app = express();
 
 app.use(express.json());
@@ -11,6 +12,7 @@ app.get("/", (req, res) => {
 });
 app.use("/api/auth", authRoutes)
 app.use("/api/client", clientRoutes)
+app.use("/api/globalExercise", globalExerciseRoutes)
 
 mongoose
   .connect(
