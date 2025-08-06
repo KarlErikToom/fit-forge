@@ -10,7 +10,7 @@ const WorkoutSchema = mongoose.Schema(
      clientId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Client",
-      required: [true, "Trainer ID is required"],
+      required: [true, "Client ID is required"],
     },
     date:{
         type:Date
@@ -19,7 +19,7 @@ const WorkoutSchema = mongoose.Schema(
     exercises: [{
         UserExerciseId: {
             type: mongoose.Schema.Types.ObjectId,
-      ref: "UserExercise",
+      ref: "User_Exercise",
         },
         sets:[{
             reps:{

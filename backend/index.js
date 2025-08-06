@@ -1,12 +1,14 @@
 const express = require("express");
 const mongoose = require("mongoose");
 require('dotenv').config();
+const authRoutes = require("./routes/authRoutes");
 const app = express();
 
-
+app.use(express.json());
 app.get("/", (req, res) => {
   res.send("Hello from Node API server");
 });
+app.use("/api/auth", authRoutes)
 
 mongoose
   .connect(
