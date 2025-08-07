@@ -1,4 +1,5 @@
-const Client = require("../models/client.model")
+const Client = require("../models/client.model");
+const Workout = require("../models/workout.model");
 
 
 
@@ -52,8 +53,8 @@ const deleteClient = async(req,res) =>{
          if (!client) {
       return res.status(404).json({ message: "Client not found or does not belong to this trainer." });
     }
-
-    res.status(200).json(client)
+await Workout.deleteMany({clientId,trainerId})
+    res.status(200).json({message:"Client and associated workout deleted"})
 
     } catch (error) {
         res.status(500).json({message:error.message})
