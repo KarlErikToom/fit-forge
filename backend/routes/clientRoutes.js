@@ -17,6 +17,8 @@ router.post("/:clientId/workout", verifyToken, workoutController.createWorkout);
 router.patch("/:clientId/workout/:workoutId", verifyToken, workoutController.updateWorkout);
 router.get("/:clientId/workout/:workoutId", verifyToken, workoutController.getWorkout);
 router.get("/:clientId/workout", verifyToken, workoutController.getWorkouts);
+router.delete("/:clientId/workout/:workoutId", verifyToken, workoutController.deleteWorkout);
+
 
 
 

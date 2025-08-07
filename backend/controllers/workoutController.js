@@ -162,5 +162,26 @@ const getWorkout = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+const deleteWorkout = async (req,res)=>{
+  try {
+    const {clientId, workoutId} = req.params
+    const trainerId = req.user.id;
 
-module.exports = { createWorkout, updateWorkout, getWorkout,getWorkouts };
+    const client = await Client.findOne({ _id: clientId, trainerId });
+    if (!client) {
+      return res
+        .status(403)
+        .json({ message: "Not authorized to delete workout for this client" });
+    }
+
+    const workout = await Workout.findOneAndDelete({_id: workoutId, clientId, trainerId})
+    if(!workout){
+            return res.status(404).json({ message: "Workout not found" });
+    }
+    res.status(200).json({message:"workout deleted succesfuly"})
+  } catch (error) {
+    res.status(500).json({message:error.message})
+  }
+}
+
+module.exports = { createWorkout, updateWorkout, getWorkout,getWorkouts, deleteWorkout };
