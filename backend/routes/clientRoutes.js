@@ -5,6 +5,9 @@ const workoutController = require("../controllers/workoutController")
 const { verifyToken } = require("../middleware/auth");
 
 
+router.get("/", verifyToken, clientController.getClients);
+router.get("/:clientId", verifyToken, clientController.getClient);
+
 
 router.post("/", verifyToken, clientController.createClient)
 
