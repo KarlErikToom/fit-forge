@@ -43,4 +43,20 @@ const getClient = async(req,res) =>{
     }
 }
 
-module.exports = {createClient, getClients, getClient}
+const deleteClient = async(req,res) =>{
+    try {
+        const {clientId} = req.params;
+        const trainerId = req.user.id;
+
+        const client = await Client.findOneAndDelete({_id:clientId, trainerId})
+         if (!client) {
+      return res.status(404).json({ message: "Client not found or does not belong to this trainer." });
+    }
+
+    res.status(200).json(client)
+
+    } catch (error) {
+        res.status(500).json({message:error.message})
+    }
+}
+module.exports = {createClient, getClients, getClient, deleteClient}

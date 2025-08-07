@@ -5,15 +5,22 @@ const workoutController = require("../controllers/workoutController")
 const { verifyToken } = require("../middleware/auth");
 
 
+// API/CLIENT ROUTES
+router.post("/", verifyToken, clientController.createClient)
 router.get("/", verifyToken, clientController.getClients);
 router.get("/:clientId", verifyToken, clientController.getClient);
+router.delete("/:clientId", verifyToken, clientController.deleteClient);
 
 
-router.post("/", verifyToken, clientController.createClient)
-
+// API/CLIENT/WORKOUT ROUTES
 router.post("/:clientId/workout", verifyToken, workoutController.createWorkout);
-
 router.patch("/:clientId/workout/:workoutId", verifyToken, workoutController.updateWorkout);
+router.get("/:clientId/workout/:workoutId", verifyToken, workoutController.getWorkout);
+router.get("/:clientId/workout", verifyToken, workoutController.getWorkouts);
+
+
+
+
 
 
 module.exports = router;
