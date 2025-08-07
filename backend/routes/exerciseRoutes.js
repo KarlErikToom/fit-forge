@@ -8,7 +8,7 @@ const { verifyToken } = require("../middleware/auth");
 router.post("/", verifyToken, exerciseController.createExercise)
 router.get("/", verifyToken, exerciseController.getExercises)
 router.get("/:exerciseId", verifyToken, exerciseController.getExercise)
-router.put("/:exerciseId", verifyToken, exerciseController.updateExercise)
+router.patch("/:exerciseId", verifyToken, exerciseController.updateExercise)
 router.delete("/:exerciseId", verifyToken, exerciseController.deleteExercise)
 
 
