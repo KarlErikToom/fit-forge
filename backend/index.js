@@ -4,6 +4,7 @@ require('dotenv').config();
 const authRoutes = require("./routes/authRoutes");
 const clientRoutes = require("./routes/clientRoutes");
 const globalExerciseRoutes = require("./routes/globalExerciseRoutes")
+const exerciseRoutes = require("./routes/exerciseRoutes")
 const app = express();
 
 app.use(express.json());
@@ -13,6 +14,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes)
 app.use("/api/clients", clientRoutes)
 app.use("/api/globalExercise", globalExerciseRoutes)
+app.use("/api/exercises", exerciseRoutes)
 
 mongoose
   .connect(
