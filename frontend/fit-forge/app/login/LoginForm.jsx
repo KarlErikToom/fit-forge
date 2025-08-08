@@ -28,9 +28,6 @@ export function LoginForm() {
         return;
       }
 
-      const data = await res.json();
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("userId", data.userId);
 
       router.push("/dashboard");
     } catch (error) {
