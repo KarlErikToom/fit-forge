@@ -12,7 +12,6 @@ router.patch("/:exerciseId", verifyToken, exerciseController.updateExercise)
 router.delete("/:exerciseId", verifyToken, exerciseController.deleteExercise)
 
 
-// API/CLIENT/WORKOUT ROUTES
 
 
 

@@ -38,7 +38,13 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: "Password do not match" });
 
     const token = createToken(user._id);
-    res.status(200).json({ userId: user._id, token });
+    res.cookie("token",token, {
+      httpOnly:true,
+      secure: process.env.NODE_ENV ==="production",
+      sameSite:"strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days: 
+    })
+    res.status(200).json({ userId: user._id });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -82,6 +88,18 @@ exports.logout = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+exports.checkAuth = async (req,res) =>{
+const token = req.cookies.token;
+if (!token) return res.status(401).json({loggedIn:false});
+
+try {
+   const decoded = jwt.verify(token, process.env.JWT_SECRET);
+   res.json({loggedIn: true, user:decoded})
+} catch (error) {
+  res.status(401).json({loggedIn:false})
+}
+}
 // Helper function to get token expiration date
 const getTokenExpirationDate = (token) => {
   try {

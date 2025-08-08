@@ -5,8 +5,16 @@ const authRoutes = require("./routes/authRoutes");
 const clientRoutes = require("./routes/clientRoutes");
 const globalExerciseRoutes = require("./routes/globalExerciseRoutes")
 const exerciseRoutes = require("./routes/exerciseRoutes")
+const cors = require("cors")
+const cookieParser = require("cookie-parser")
 const app = express();
 
+
+app.use(cookieParser())
+app.use(cors({
+  origin: "http://localhost:3000",
+  credentials:true
+}))
 app.use(express.json());
 app.get("/", (req, res) => {
   res.send("Hello from Node API server");
@@ -22,7 +30,7 @@ mongoose
   )
   .then(() => {
     console.log("connected to database");
-    app.listen(3000, () => {
+    app.listen(5000, () => {
       console.log("Server running at port 3000");
     });
   })

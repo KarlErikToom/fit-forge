@@ -6,18 +6,18 @@ const { verifyToken } = require("../middleware/auth");
 
 
 // API/CLIENT ROUTES
-router.post("/", verifyToken, clientController.createClient)
 router.get("/", verifyToken, clientController.getClients);
 router.get("/:clientId", verifyToken, clientController.getClient);
+router.post("/", verifyToken, clientController.createClient)
 router.delete("/:clientId", verifyToken, clientController.deleteClient);
 
 
 // API/CLIENT/WORKOUT ROUTES
-router.post("/:clientId/workout", verifyToken, workoutController.createWorkout);
-router.patch("/:clientId/workout/:workoutId", verifyToken, workoutController.updateWorkout);
-router.get("/:clientId/workout/:workoutId", verifyToken, workoutController.getWorkout);
-router.get("/:clientId/workout", verifyToken, workoutController.getWorkouts);
-router.delete("/:clientId/workout/:workoutId", verifyToken, workoutController.deleteWorkout);
+router.get("/:clientId/workouts", verifyToken, workoutController.getWorkouts);
+router.get("/:clientId/workouts/:workoutId", verifyToken, workoutController.getWorkout);
+router.post("/:clientId/workouts", verifyToken, workoutController.createWorkout);
+router.patch("/:clientId/workouts/:workoutId", verifyToken, workoutController.updateWorkout);
+router.delete("/:clientId/workouts/:workoutId", verifyToken, workoutController.deleteWorkout);
 
 
 
