@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.NEXT_API_URL || "http://localhost:3000/api";
+const API_BASE_URL = process.env.NEXT_API_URL || "http://localhost:5000/api";
 
 class ApiClient {
   async request(endpoint, options = {}) {
@@ -25,6 +25,8 @@ class ApiClient {
       }
       throw new Error(`API error: ${response.status} ${response.statusText}`);
     }
+
+    return response.json()
   }
 
   ///CLIENT ROUTES

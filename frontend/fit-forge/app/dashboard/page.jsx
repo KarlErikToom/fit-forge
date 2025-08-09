@@ -1,20 +1,19 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import ApiClient from '../../lib/api'
 
 export default function Dashboard() {
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
+  const api = new ApiClient()
+
+ useEffect(() => {
     async function fetchClients() {
       try {
-        const res = await fetch("http://localhost:5000/api/clients", {
-          credentials: "include", // send cookies automatically
-        });
-        if (!res.ok) throw new Error(`Error: ${res.status}`);
-        const data = await res.json();
+        const data = await api.getClients(); // ✅ Use your API client
         setClients(data);
       } catch (err) {
         setError(err.message);
