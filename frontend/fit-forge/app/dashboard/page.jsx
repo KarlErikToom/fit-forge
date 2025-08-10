@@ -16,7 +16,9 @@ export default function Dashboard() {
         const data = await api.getClients(); // ✅ Use your API client
         setClients(data);
       } catch (err) {
-        setError(err.message);
+       
+
+        setError(err.message || "Something went wrong");
       } finally {
         setLoading(false);
       }
