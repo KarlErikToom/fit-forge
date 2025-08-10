@@ -3,6 +3,17 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Label } from "@radix-ui/react-label";
+import { Input } from "@/components/ui/input";
 
 export function LoginForm() {
   const router = useRouter();
@@ -28,7 +39,6 @@ export function LoginForm() {
         return;
       }
 
-
       router.push("/dashboard");
     } catch (error) {
       setError("Something went wrong. Please try again.");
@@ -36,28 +46,53 @@ export function LoginForm() {
   }
 
   return (
-    <div style={{ maxWidth: 400, margin: "auto" }}>
-      <h1>Login</h1>
-      <form onSubmit={handleLogin}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <br />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <br />
-        <button type="submit">Login</button>
-      </form>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-    </div>
+    <Card className="w-full max-w-sm">
+      <CardHeader>
+        <CardTitle>Login to your account</CardTitle>
+        <CardDescription>
+          Enter your email below to login to your account
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form id="loginForm" onSubmit={handleLogin}>
+          <div className="flex flex-col gap-6">
+            <div className="grid gap-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div className="grid gap-2">
+              <div className="flex items-center">
+                <Label htmlFor="password">Password</Label>
+                <a
+                  href="#"
+                  className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                >
+                  Forgot your password?
+                </a>
+              </div>
+              <Input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+        </form>
+      </CardContent>
+      <CardFooter className="flex-col gap-2">
+        <Button type="submit" className="w-full" form="loginForm">
+          Login
+        </Button>
+        {error && <p style={{ color: "red" }}>{error}</p>}
+      </CardFooter>
+    </Card>
   );
 }
