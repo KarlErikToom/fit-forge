@@ -16,17 +16,18 @@ export default function Dashboard() {
         const data = await api.getClients(); // ✅ Use your API client
         setClients(data);
       } catch (err) {
-       
-
+        
+        
         setError(err.message || "Something went wrong");
       } finally {
         setLoading(false);
       }
     }
-
+    
     fetchClients();
   }, []);
-
+  console.log(clients)
+  
   if (loading) return <div>Loading clients...</div>;
   if (error) return <div>Error: {error}</div>;
 
@@ -36,7 +37,7 @@ export default function Dashboard() {
       {clients.length === 0 ? (
         <p>No clients found</p>
       ) : (
-        clients.map((client) => <div key={client.id}>{client.name}</div>)
+        clients.map((client) => <div key={client._id}>{client.firstName}</div>)
       )}
     </div>
   );

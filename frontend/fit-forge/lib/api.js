@@ -25,8 +25,8 @@ class ApiClient {
       }
       throw new Error(`API error: ${response.status} ${response.statusText}`);
     }
-
-    return response.json()
+   const data = await response.json();
+   return data
   }
 
   ///CLIENT ROUTES
