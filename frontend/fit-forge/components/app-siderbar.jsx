@@ -1,4 +1,5 @@
-import { Calendar, Home, Inbox, Search, Settings, Plus, User2, ChevronUp } from "lucide-react"
+"use client"
+import {Plus, User2, ChevronUp } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -11,37 +12,33 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
+import { useEffect, useState } from "react";
+import ApiClient from "@/lib/api";
 
-// Menu items.
-const items = [
-  {
-    title: "Toobal",
-    url: "#",
-    icon: Home,
-  },
-  {
-    title: "Kermo",
-    url: "#",
-    icon: Inbox,
-  },
-  {
-    title: "Karl",
-    url: "#",
-    icon: Calendar,
-  },
-  {
-    title: "Kristjan",
-    url: "#",
-    icon: Search,
-  },
-  {
-    title: "Andreas",
-    url: "#",
-    icon: Settings,
-  },
-]
 
 export function AppSidebar() {
+    const [clients, setClients] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const api = new ApiClient()
+
+ useEffect(() => {
+    async function fetchClients() {
+      try {
+        const data = await api.getClients(); // ✅ Use your API client
+        setClients(data);
+      } catch (err) {
+        
+        
+        setError(err.message || "Something went wrong");
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchClients();
+  }, []);
   return (
     <Sidebar collapsible="icon">
       <SidebarContent>
@@ -49,12 +46,10 @@ export function AppSidebar() {
           <SidebarGroupLabel>Clients</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
+              {clients.map((client) => (
+                <SidebarMenuItem key={client._id}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <span>{item.title}</span>
-                    </a>
+                      <span>{client.firstName} {client.lastName}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
