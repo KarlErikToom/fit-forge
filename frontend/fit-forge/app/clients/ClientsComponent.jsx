@@ -41,11 +41,11 @@ export function ClientsComponent() {
         <p>no clients found</p>
       ) : (
         clients.map((client) => (
-          <Link key={client._id}  href="">
-          <Card className="w-[240px] h-[240px] max-w-sm m-2" >
+          <Link key={client._id}  href={`/clients/${client._id}`}>
+          <Card className="w-[240px]  max-w-sm m-2" >
             <CardHeader className="items-center justify-center">
               <CardTitle className="flex items-center justify-center">
-              <Avatar className="flex flex-col items-center justify-center">
+              <Avatar className="flex flex-col items-center justify-center w-20 h-20">
                 <AvatarImage
                   src="https://github.com/evilrabbit.png"
                   alt="@evilrabbit"
@@ -57,8 +57,8 @@ export function ClientsComponent() {
                {client.firstName} {client.lastName}
               </CardDescription>
             </CardHeader>
-            <CardContent className="p-2 overflow-y-auto max-h-[100px]">
-              <CardDescription >Lorem asddddddd ddddddddd ddddd ddddddd ipsum dolor sit amet consectetur adipisicing elit. Porro corporis recusandae reiciendis voluptatum excepturi expedita doloremque. Laudantium quod et nihil!</CardDescription>
+            <CardContent className="text-center">
+              <CardDescription >{client.email}</CardDescription>
             </CardContent>
           </Card>
       </Link>

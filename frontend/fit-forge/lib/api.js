@@ -1,6 +1,11 @@
+// lib/api.js
 const API_BASE_URL = process.env.NEXT_API_URL || "http://localhost:5000/api";
 
 class ApiClient {
+  constructor(reqCookiesString) {
+    this.reqCookiesString = reqCookiesString; // string like "token=abc; other=xyz"
+  }
+
   async request(endpoint, options = {}) {
     const url = `${API_BASE_URL}${endpoint}`;
 
@@ -9,9 +14,14 @@ class ApiClient {
         "Content-Type": "application/json",
         ...options.headers,
       },
-      credentials: "include",
+      credentials: "include", // works in browser
       ...options,
     };
+
+    // For server-side, manually attach cookies
+    if (this.reqCookiesString) {
+      config.headers.cookie = this.reqCookiesString;
+    }
 
     if (config.body && typeof config.body !== "string") {
       config.body = JSON.stringify(config.body);
@@ -21,12 +31,12 @@ class ApiClient {
 
     if (!response.ok) {
       if (response.status === 401) {
-        Cookies.remove("token");
+        // Handle unauthorized
       }
       throw new Error(`API error: ${response.status} ${response.statusText}`);
     }
-   const data = await response.json();
-   return data
+
+    return await response.json();
   }
 
   ///CLIENT ROUTES
