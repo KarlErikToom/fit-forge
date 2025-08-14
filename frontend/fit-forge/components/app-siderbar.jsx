@@ -17,16 +17,47 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
 import ApiClient from "@/lib/api";
 import Link from "next/link";
+import { Button } from "./ui/button";
+import { Label } from "./ui/label";
+import { Input } from "./ui/input";
 
 export function AppSidebar() {
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [clientFirstName, setClientFirstName] = useState("");
+  const [clientLastName, setClientLastName] = useState("");
+  const [clientEmail, setClientEmail] = useState("");
+
   const api = new ApiClient();
+  async function createClient(e) {
+    e.preventDefault();
+    try {
+      const clientData = {
+        firstName: clientFirstName,
+        lastName: clientLastName,
+        email: clientEmail,
+      };
+      const res = await api.createClient(clientData);
+      setClients(prev => [...prev, res]);
+
+
+    } catch (error) {}
+  }
 
   useEffect(() => {
     async function fetchClients() {
@@ -63,19 +94,71 @@ export function AppSidebar() {
             </SidebarMenu>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton >
+                <SidebarMenuButton>
                   <Link href={"/exercises"} className="flex items-center">
                     <Dumbbell size={16} />
                     <span className={"ml-2"}> Exercise list</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <Plus />
-                  <span>Add a client</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              <Dialog>
+                  <DialogTrigger asChild>
+                    <SidebarMenuButton>
+                      <Plus />
+                      <span>Add a client</span>
+                    </SidebarMenuButton>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                <form onSubmit={createClient}>
+                    <DialogHeader>
+                      <DialogTitle>Add client</DialogTitle>
+                      <DialogDescription>
+                        Create a new client so you can start tracking their
+                        workouts, make sure the information is correct
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4">
+                      <div className="grid gap-3">
+                        <Label htmlFor="firstName">First Name</Label>
+                        <Input
+                          id="firstName"
+                          name="firstName"
+                          required
+                          value={clientFirstName}
+                          onChange={(e) => setClientFirstName(e.target.value)}
+                        />
+                      </div>
+                      <div className="grid gap-3">
+                        <Label htmlFor="lastName">Last Name</Label>
+                        <Input
+                          id="lastName"
+                          name="lastName"
+                          value={clientLastName}
+                          required
+                          onChange={(e) => setClientLastName(e.target.value)}
+                        />
+                      </div>
+                      <div className="grid gap-3">
+                        <Label htmlFor="email">email</Label>
+                        <Input
+                          id="email"
+                          name="email"
+                          type="email"
+                          required
+                          value={clientEmail}
+                          onChange={(e) => setClientEmail(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter className={"mt-4"}>
+                      <DialogClose asChild>
+                        <Button variant="outline">Cancel</Button>
+                      </DialogClose>
+                      <Button type="submit">Save changes</Button>
+                    </DialogFooter>
+                </form>
+                  </DialogContent>
+              </Dialog>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

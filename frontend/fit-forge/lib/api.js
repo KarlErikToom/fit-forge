@@ -91,7 +91,7 @@ class ApiClient {
     return this.request(`/exercises`);
   }
   getExercise(exerciseId) {
-    return this.request(`/exercises/${id}`);
+    return this.request(`/exercises/${exerciseId}`);
   }
 
   createExercise(exerciseData) {
