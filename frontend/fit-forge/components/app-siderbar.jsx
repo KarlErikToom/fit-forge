@@ -93,17 +93,17 @@ export function AppSidebar() {
               ))}
             </SidebarMenu>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton>
+              <SidebarMenuItem >
+                <SidebarMenuButton className={"hover:cursor-pointer"}>
                   <Link href={"/exercises"} className="flex items-center">
                     <Dumbbell size={16} />
                     <span className={"ml-2"}> Exercise list</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              <Dialog>
+              <Dialog >
                   <DialogTrigger asChild>
-                    <SidebarMenuButton>
+                    <SidebarMenuButton className={"hover:cursor-pointer"}>
                       <Plus />
                       <span>Add a client</span>
                     </SidebarMenuButton>

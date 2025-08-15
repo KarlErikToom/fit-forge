@@ -1,44 +1,28 @@
-"use client";
+import { cookies } from "next/headers";
+import { columns } from "./columns"
+import { DataTable } from "./data-table"
+import ApiClient from "@/lib/api";
 
-import { useState, useEffect } from "react";
-import ApiClient from '../../lib/api'
+async function getData() {
 
-export default function Dashboard() {
-  const [clients, setClients] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const cookieStore = await cookies();
+  const cookieHeader = cookieStore
+    .getAll()
+    .map(({ name, value }) => `${name}=${value}`)
+    .join("; ");
 
-  const api = new ApiClient()
+  const api = new ApiClient(cookieHeader);
+  const clients = await api.getClients( );
+  return clients
+}
 
- useEffect(() => {
-    async function fetchClients() {
-      try {
-        const data = await api.getClients(); // ✅ Use your API client
-        setClients(data);
-      } catch (err) {
-        
-        
-        setError(err.message || "Something went wrong");
-      } finally {
-        setLoading(false);
-      }
-    }
-    
-    fetchClients();
-  }, []);
+export default async function DemoPage() {
+  const clients = await getData()
   console.log(clients)
-  
-  if (loading) return <div>Loading clients...</div>;
-  if (error) return <div>Error: {error}</div>;
 
   return (
-    <div>
-      <h1>Clients</h1>
-      {clients.length === 0 ? (
-        <p>No clients found</p>
-      ) : (
-        clients.map((client) => <div key={client._id}>{client.firstName}</div>)
-      )}
+    <div className="container mx-auto py-10">
+      <DataTable columns={columns} data={clients} />
     </div>
-  );
+  )
 }
