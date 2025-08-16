@@ -4,8 +4,6 @@ export const Client = {
   id: "",
   firstName: "",
   lastName:"",
-  amount: 0,
-  status: "pending",
   email: "",
 };
 
@@ -19,16 +17,25 @@ export const columns = [
     accessorKey: "lastName",
     header: "Last Name",
   },
-  {
-    accessorKey: "status",
-    header: "Status",
-  },
+ 
   {
     accessorKey: "email",
     header: "Email",
   },
-  {
-    accessorKey: "amount",
-    header: "Amount",
+   {
+    accessorKey: "type",
+    header: "Type",
   },
+   {
+    accessorKey: "currentWeight",
+    header: "Current Weight",
+  }, {
+    accessorKey: "goalWeight",
+    header: "Goal Weight",
+  },{
+    accessorKey: "nextWorkout",
+    header: "Next Workout",
+  },
+
+
 ];

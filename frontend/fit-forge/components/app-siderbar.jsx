@@ -11,12 +11,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@radix-ui/react-dropdown-menu";
+
 import {
   Dialog,
   DialogClose,
@@ -33,6 +28,21 @@ import Link from "next/link";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 export function AppSidebar() {
   const [clients, setClients] = useState([]);
@@ -42,6 +52,9 @@ export function AppSidebar() {
   const [clientFirstName, setClientFirstName] = useState("");
   const [clientLastName, setClientLastName] = useState("");
   const [clientEmail, setClientEmail] = useState("");
+  const [clientType, setClientType] = useState("");
+  const [clientWeight, setClientWeight] = useState(0);
+  const [clientGoalWeight, setClientGoalWeight] = useState(0);
 
   const api = new ApiClient();
   async function createClient(e) {
@@ -51,11 +64,23 @@ export function AppSidebar() {
         firstName: clientFirstName,
         lastName: clientLastName,
         email: clientEmail,
+        type: clientType,
+        currentWeight: clientWeight,
+        goalWeight: clientGoalWeight,
       };
       const res = await api.createClient(clientData);
-      setClients(prev => [...prev, res]);
+      setClients((prev) => [...prev, res]);
+      if (window.addClientToTable) {
+        window.addClientToTable(res);
+      }
 
-
+      // Clear form fields
+      setClientFirstName("");
+      setClientLastName("");
+      setClientEmail("");
+      setClientType("");
+      setClientWeight(0);
+      setClientGoalWeight(0);
     } catch (error) {}
   }
 
@@ -93,7 +118,7 @@ export function AppSidebar() {
               ))}
             </SidebarMenu>
             <SidebarMenu>
-              <SidebarMenuItem >
+              <SidebarMenuItem>
                 <SidebarMenuButton className={"hover:cursor-pointer"}>
                   <Link href={"/exercises"} className="flex items-center">
                     <Dumbbell size={16} />
@@ -101,15 +126,15 @@ export function AppSidebar() {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              <Dialog >
-                  <DialogTrigger asChild>
-                    <SidebarMenuButton className={"hover:cursor-pointer"}>
-                      <Plus />
-                      <span>Add a client</span>
-                    </SidebarMenuButton>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
-                <form onSubmit={createClient}>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <SidebarMenuButton className={"hover:cursor-pointer"}>
+                    <Plus />
+                    <span>Add a client</span>
+                  </SidebarMenuButton>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <form onSubmit={createClient}>
                     <DialogHeader>
                       <DialogTitle>Add client</DialogTitle>
                       <DialogDescription>
@@ -149,6 +174,52 @@ export function AppSidebar() {
                           onChange={(e) => setClientEmail(e.target.value)}
                         />
                       </div>
+                      <div className="flex gap-3">
+                        <Select
+                          value={clientType}
+                          onValueChange={setClientType}
+                        >
+                          <div>
+                            <Label htmlFor="type" className={"mb-3"}>
+                              Client Type
+                            </Label>
+
+                            <SelectTrigger className="w-[180px]">
+                              <SelectValue placeholder="Select a type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectGroup>
+                                <SelectLabel>Types</SelectLabel>
+                                <SelectItem value="inPerson">
+                                  in Person
+                                </SelectItem>
+                                <SelectItem value="online">online</SelectItem>
+                                <SelectItem value="hybrid">hybrid</SelectItem>
+                                <SelectItem value="bodybuilding">
+                                  bodybuilding
+                                </SelectItem>
+                                <SelectItem value="powerlifting">
+                                  powerlifting
+                                </SelectItem>
+                              </SelectGroup>
+                            </SelectContent>
+                          </div>
+                        </Select>
+                        <div>
+                          <Label htmlFor="weight" className={"mb-3"}>
+                            weight (kg)
+                          </Label>
+                          <Input
+                            id="weight"
+                            name="weight"
+                            type="number"
+                            min="0"
+                            required
+                            value={clientWeight}
+                            onChange={(e) => setClientWeight(e.target.value)}
+                          />
+                        </div>
+                      </div>
                     </div>
                     <DialogFooter className={"mt-4"}>
                       <DialogClose asChild>
@@ -156,8 +227,8 @@ export function AppSidebar() {
                       </DialogClose>
                       <Button type="submit">Save changes</Button>
                     </DialogFooter>
-                </form>
-                  </DialogContent>
+                  </form>
+                </DialogContent>
               </Dialog>
             </SidebarMenu>
           </SidebarGroupContent>
