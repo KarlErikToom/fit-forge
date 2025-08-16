@@ -23,37 +23,32 @@ export default function ClientCalendar({ client, clientId }) {
   const [loadingWorkouts, setLoadingWorkouts] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [workoutName, setWorkoutName] = useState("");
-  const [workoutDescription, setWorkoutDescription] = useState("");
-  const [workoutDuration, setWorkoutDuration] = useState("");
   const [creatingWorkout, setCreatingWorkout] = useState(false);
   
   const api = new ApiClient();
-
-  // Get workouts for the selected date
-  const getWorkoutsForDate = async (date, clientId) => {
-    setLoadingWorkouts(true);
-    try {
-      // You might need to modify your API to accept date filtering
-      // For now, get all workouts and filter by date
-      const allWorkouts = await api.getWorkouts();
-      const dateString = format(date, "yyyy-MM-dd");
-      
-      // Filter workouts for this client and date
-      const dateWorkouts = allWorkouts.filter(workout => 
-        workout.clientId === clientId && 
-        workout.date === dateString
-      );
-      
-      setWorkouts(dateWorkouts);
-    } catch (error) {
-      console.error("Failed to fetch workouts:", error);
-      setWorkouts([]);
-    } finally {
-      setLoadingWorkouts(false);
-    }
-  };
-
-  // Handle date selection
+const getWorkoutsForDate = async (date, clientId) => {
+  setLoadingWorkouts(true);
+  try {
+    const allWorkouts = await api.getWorkouts(clientId);
+    
+    const selectedDateString = format(date, 'yyyy-MM-dd');
+   
+    console.log("Selected date (local):", selectedDateString);
+   
+    const dateWorkouts = allWorkouts.filter(workout => {
+      const workoutDateString = workout.date.substring(0, 10); // Just the date part
+      return workout.clientId === clientId && workoutDateString === selectedDateString;
+    });
+   
+    console.log("Filtered dateWorkouts:", dateWorkouts);
+    setWorkouts(dateWorkouts);
+  } catch (error) {
+    console.error("Failed to fetch workouts:", error);
+    setWorkouts([]);
+  } finally {
+    setLoadingWorkouts(false);
+  }
+};
   const handleDateSelect = (date) => {
     setSelectedDate(date);
     if (date) {
@@ -61,7 +56,6 @@ export default function ClientCalendar({ client, clientId }) {
     }
   };
 
-  // Load workouts for initial date
   useEffect(() => {
     if (selectedDate && clientId) {
       getWorkoutsForDate(selectedDate, clientId);
@@ -81,21 +75,14 @@ export default function ClientCalendar({ client, clientId }) {
     try {
       const workoutData = {
         name: workoutName,
-        description: workoutDescription,
         date: format(selectedDate, "yyyy-MM-dd"),
-        duration: workoutDuration ? parseInt(workoutDuration) : null,
-        exercises: [],
       };
 
       const newWorkout = await api.createWorkout(clientId, workoutData);
       
-      // Add new workout to the list
       setWorkouts(prev => [...prev, newWorkout]);
       
-      // Reset form and close dialog
       setWorkoutName("");
-      setWorkoutDescription("");
-      setWorkoutDuration("");
       setIsDialogOpen(false);
       
     } catch (error) {
@@ -115,7 +102,6 @@ export default function ClientCalendar({ client, clientId }) {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
-      {/* Calendar Section */}
       <div>
         <div className="mb-4">
           <h1 className="text-2xl font-bold">
@@ -132,7 +118,6 @@ export default function ClientCalendar({ client, clientId }) {
         />
       </div>
 
-      {/* Workouts Section */}
       <div>
         <div className="mb-4">
           <h2 className="text-xl font-semibold">
@@ -152,7 +137,7 @@ export default function ClientCalendar({ client, clientId }) {
             {workouts.length > 0 ? (
               <>
                 {workouts.map((workout) => (
-                  <Card key={workout.id}>
+                  <Card key={workout._id}>
                     <CardHeader className="pb-3">
                       <CardTitle className="text-lg flex items-center gap-2">
                         <Dumbbell className="h-5 w-5" />
@@ -172,7 +157,6 @@ export default function ClientCalendar({ client, clientId }) {
                   </Card>
                 ))}
                 
-                {/* Add Another Workout Button */}
                 <Button 
                   onClick={() => setIsDialogOpen(true)}
                   variant="outline" 
@@ -183,7 +167,6 @@ export default function ClientCalendar({ client, clientId }) {
                 </Button>
               </>
             ) : (
-              /* No Workouts - Show Create Button */
               <div className="text-center py-8">
                 <div className="mb-4">
                   <Dumbbell className="h-12 w-12 mx-auto text-gray-400" />
@@ -204,7 +187,6 @@ export default function ClientCalendar({ client, clientId }) {
         )}
       </div>
 
-      {/* Create Workout Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
@@ -229,17 +211,7 @@ export default function ClientCalendar({ client, clientId }) {
 
             
 
-            <div>
-              <Label htmlFor="workoutDuration">Duration (minutes)</Label>
-              <Input
-                id="workoutDuration"
-                type="number"
-                value={workoutDuration}
-                onChange={(e) => setWorkoutDuration(e.target.value)}
-                placeholder="e.g., 60"
-                min="1"
-              />
-            </div>
+           
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={handleDialogClose}>

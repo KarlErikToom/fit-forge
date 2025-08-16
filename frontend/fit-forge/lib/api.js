@@ -60,8 +60,8 @@ class ApiClient {
 
   //CLIENT WORKOUT ROUTES
 
-  getWorkouts() {
-    return this.request(`/clients/workouts`);
+  getWorkouts(clientId) {
+    return this.request(`/clients/${clientId}/workouts`);
   }
 
   getWorkout(clientId, workoutId) {

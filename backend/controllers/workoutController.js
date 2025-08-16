@@ -5,7 +5,7 @@ const createWorkout = async (req, res) => {
   try {
     const trainerId = req.user.id;
     const clientId = req.params.clientId;
-    const { date } = req.body;
+    const { date, name } = req.body;
 
     const client = await Client.findOne({ _id: clientId, trainerId });
 
@@ -18,6 +18,7 @@ const createWorkout = async (req, res) => {
       trainerId,
       clientId,
       date,
+      name,
       exercises: [],
     });
     res.status(201).json(workout);

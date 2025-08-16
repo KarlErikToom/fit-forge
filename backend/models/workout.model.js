@@ -16,6 +16,10 @@ const WorkoutSchema = mongoose.Schema(
         type:Date,
         required:[true, "Workout date is required"]
     },
+    name:{
+      type:String,
+required:[true,"workout name is required"]
+    },
 
     exercises: [{
         UserExerciseId: {
