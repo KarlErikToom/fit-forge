@@ -13,7 +13,8 @@ const WorkoutSchema = mongoose.Schema(
       required: [true, "Client ID is required"],
     },
     date:{
-        type:Date
+        type:Date,
+        required:[true, "Workout date is required"]
     },
 
     exercises: [{

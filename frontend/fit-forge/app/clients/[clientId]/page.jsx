@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import ApiClient from "@/lib/api";
-import ClientCard from "./ClientCard";
+import ClientCalendar from "./ClientCalendar";
 
 export default async function ClientPage(props) {
   const params = await props.params;
@@ -13,5 +13,5 @@ export default async function ClientPage(props) {
   const api = new ApiClient(cookieHeader);
   const client = await api.getClient( params.clientId);
 
-  return <ClientCard client={client} />;
+  return <ClientCalendar client={client} clientId={params.clientId} />;
 }
