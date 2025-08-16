@@ -11,7 +11,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { useState, useEffect } from "react";
 import ApiClient from "@/lib/api";
 import { format } from "date-fns";
@@ -24,32 +30,34 @@ export default function ClientCalendar({ client, clientId }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [workoutName, setWorkoutName] = useState("");
   const [creatingWorkout, setCreatingWorkout] = useState(false);
-  
+
   const api = new ApiClient();
-const getWorkoutsForDate = async (date, clientId) => {
-  setLoadingWorkouts(true);
-  try {
-    const allWorkouts = await api.getWorkouts(clientId);
-    
-    const selectedDateString = format(date, 'yyyy-MM-dd');
-   
-    console.log("Selected date (local):", selectedDateString);
-   
-    const dateWorkouts = allWorkouts.filter(workout => {
-      const workoutDateString = workout.date.substring(0, 10); // Just the date part
-      return workout.clientId === clientId && workoutDateString === selectedDateString;
-    });
-   
-    console.log("Filtered dateWorkouts:", dateWorkouts);
-    setWorkouts(dateWorkouts);
-  } catch (error) {
-    console.error("Failed to fetch workouts:", error);
-    setWorkouts([]);
-  } finally {
-    setLoadingWorkouts(false);
-  }
-};
-  const handleDateSelect = (date) => {
+
+  async function getWorkoutsForDate(date, clientId) {
+    setLoadingWorkouts(true);
+    try {
+      const allWorkouts = await api.getWorkouts(clientId);
+
+      const selectedDateString = format(date, "yyyy-MM-dd");
+
+
+      const dateWorkouts = allWorkouts.filter((workout) => {
+        const workoutDateString = workout.date.substring(0, 10); // Just the date part
+        return (
+          workout.clientId === clientId &&
+          workoutDateString === selectedDateString
+        );
+      });
+
+      setWorkouts(dateWorkouts);
+    } catch (error) {
+      console.error("Failed to fetch workouts:", error);
+      setWorkouts([]);
+    } finally {
+      setLoadingWorkouts(false);
+    }
+  };
+  function handleDateSelect(date)  {
     setSelectedDate(date);
     if (date) {
       getWorkoutsForDate(date, clientId);
@@ -62,16 +70,16 @@ const getWorkoutsForDate = async (date, clientId) => {
     }
   }, [clientId]);
 
-  const createWorkout = async (e) => {
+  async function createWorkout(e){
     e.preventDefault();
-    
+
     if (!workoutName.trim()) {
       alert("Please enter a workout name");
       return;
     }
 
     setCreatingWorkout(true);
-    
+
     try {
       const workoutData = {
         name: workoutName,
@@ -79,12 +87,11 @@ const getWorkoutsForDate = async (date, clientId) => {
       };
 
       const newWorkout = await api.createWorkout(clientId, workoutData);
-      
-      setWorkouts(prev => [...prev, newWorkout]);
-      
+
+      setWorkouts((prev) => [...prev, newWorkout]);
+
       setWorkoutName("");
       setIsDialogOpen(false);
-      
     } catch (error) {
       console.error("Failed to create workout:", error);
       alert("Failed to create workout. Please try again.");
@@ -93,7 +100,7 @@ const getWorkoutsForDate = async (date, clientId) => {
     }
   };
 
-  const handleDialogClose = () => {
+  function handleDialogClose() {
     setIsDialogOpen(false);
     setWorkoutName("");
     setWorkoutDescription("");
@@ -107,7 +114,9 @@ const getWorkoutsForDate = async (date, clientId) => {
           <h1 className="text-2xl font-bold">
             {client?.firstName} {client?.lastName}'s Workouts
           </h1>
-          <p className="text-gray-600">Select a date to view or create workouts</p>
+          <p className="text-gray-600">
+            Select a date to view or create workouts
+          </p>
         </div>
 
         <Calendar
@@ -124,7 +133,9 @@ const getWorkoutsForDate = async (date, clientId) => {
             {selectedDate && format(selectedDate, "MMMM d, yyyy")}
           </h2>
           <p className="text-gray-600">
-            {loadingWorkouts ? "Loading workouts..." : `${workouts.length} workout(s)`}
+            {loadingWorkouts
+              ? "Loading workouts..."
+              : `${workouts.length} workout(s)`}
           </p>
         </div>
 
@@ -151,15 +162,17 @@ const getWorkoutsForDate = async (date, clientId) => {
                     </CardHeader>
                     {workout.description && (
                       <CardContent>
-                        <p className="text-sm text-gray-600">{workout.description}</p>
+                        <p className="text-sm text-gray-600">
+                          {workout.description}
+                        </p>
                       </CardContent>
                     )}
                   </Card>
                 ))}
-                
-                <Button 
+
+                <Button
                   onClick={() => setIsDialogOpen(true)}
-                  variant="outline" 
+                  variant="outline"
                   className="w-full"
                 >
                   <Plus className="h-4 w-4 mr-2" />
@@ -175,7 +188,8 @@ const getWorkoutsForDate = async (date, clientId) => {
                   No workouts scheduled
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  Create a workout for {selectedDate && format(selectedDate, "MMMM d, yyyy")}
+                  Create a workout for{" "}
+                  {selectedDate && format(selectedDate, "MMMM d, yyyy")}
                 </p>
                 <Button onClick={() => setIsDialogOpen(true)}>
                   <Plus className="h-4 w-4 mr-2" />
@@ -192,10 +206,11 @@ const getWorkoutsForDate = async (date, clientId) => {
           <DialogHeader>
             <DialogTitle>Create Workout</DialogTitle>
             <DialogDescription>
-              Create a new workout for {selectedDate && format(selectedDate, "MMMM d, yyyy")}
+              Create a new workout for{" "}
+              {selectedDate && format(selectedDate, "MMMM d, yyyy")}
             </DialogDescription>
           </DialogHeader>
-          
+
           <form onSubmit={createWorkout} className="space-y-4">
             <div>
               <Label htmlFor="workoutName">Workout Name *</Label>
@@ -209,12 +224,12 @@ const getWorkoutsForDate = async (date, clientId) => {
               />
             </div>
 
-            
-
-           
-
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={handleDialogClose}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleDialogClose}
+              >
                 Cancel
               </Button>
               <Button type="submit" disabled={creatingWorkout}>

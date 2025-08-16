@@ -128,8 +128,8 @@ const updateWorkout = async (req, res) => {
 
 const getWorkouts = async (req, res) => {
   try {
-    const { clientId} = req.params;
     const trainerId = req.user.id;
+    const { clientId} = req.params;
 
     const client = await Client.findOne({ _id: clientId, trainerId });
 

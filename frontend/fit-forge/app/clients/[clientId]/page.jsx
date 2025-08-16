@@ -6,6 +6,8 @@ import { redirect } from "next/dist/server/api-utils";
 export default async function ClientPage(props) {
   const params = await props.params;
   const cookieStore = await cookies();
+  const token =  cookieStore.get("token")?.value;
+
 
   const isLoggedIn = await validateToken(token);
 
