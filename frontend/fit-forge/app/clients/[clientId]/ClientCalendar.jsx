@@ -42,7 +42,7 @@ export default function ClientCalendar({ client, clientId }) {
 
 
       const dateWorkouts = allWorkouts.filter((workout) => {
-        const workoutDateString = workout.date.substring(0, 10); // Just the date part
+        const workoutDateString = workout.date.substring(0, 10); 
         return (
           workout.clientId === clientId &&
           workoutDateString === selectedDateString

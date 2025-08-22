@@ -22,7 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import ApiClient from "@/lib/api";
 import Link from "next/link";
 import { Button } from "./ui/button";
@@ -43,61 +43,59 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { useClients } from "@/context/ClientContext";
+import { Fallback } from "@radix-ui/react-avatar";
 
 export function AppSidebar() {
-  const [clients, setClients] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { clients, loading, error, addClient } = useClients();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [clientFirstName, setClientFirstName] = useState("");
   const [clientLastName, setClientLastName] = useState("");
   const [clientEmail, setClientEmail] = useState("");
   const [clientType, setClientType] = useState("");
-  const [clientWeight, setClientWeight] = useState(0);
-  const [clientGoalWeight, setClientGoalWeight] = useState(0);
+  const [clientWeight, setClientWeight] = useState("");
+  const [clientGoalWeight, setClientGoalWeight] = useState("");
 
+  const dialogCloseRef = useRef(null);
   const api = new ApiClient();
-  async function createClient(e) {
-    e.preventDefault();
+
+  const clearForm = () => {
+    setClientFirstName("");
+    setClientLastName("");
+    setClientEmail("");
+    setClientType("");
+    setClientWeight("");
+    setClientGoalWeight("");
+  };
+
+   async function handleCreateClient(e) {
+    e.preventDefault()
+    setIsSubmitting(true)
+    
     try {
       const clientData = {
-        firstName: clientFirstName,
-        lastName: clientLastName,
-        email: clientEmail,
-        type: clientType,
-        currentWeight: clientWeight,
-        goalWeight: clientGoalWeight,
-      };
-      const res = await api.createClient(clientData);
-      setClients((prev) => [...prev, res]);
-      if (window.addClientToTable) {
-        window.addClientToTable(res);
+        firstName:clientFirstName,
+        lastName:clientLastName,
+        email:clientEmail,
+        type:clientType,
+        currentWeight: parseFloat(clientWeight) || 0,
+        goalWeight: parseFloat(clientGoalWeight) || 0
       }
 
-      // Clear form fields
-      setClientFirstName("");
-      setClientLastName("");
-      setClientEmail("");
-      setClientType("");
-      setClientWeight(0);
-      setClientGoalWeight(0);
-    } catch (error) {}
-  }
+      await addClient(clientData)
 
-  useEffect(() => {
-    async function fetchClients() {
-      try {
-        const data = await api.getClients(); // ✅ Use your API client
-        setClients(data);
-      } catch (err) {
-        setError(err.message || "Something went wrong");
-      } finally {
-        setLoading(false);
-      }
+      clearForm();
+      setIsDialogOpen(false)
+    } catch (error) {
+            console.error("Failed to create client:", error);
+    } finally{
+            setIsSubmitting(false);
     }
+   }
 
-    fetchClients();
-  }, []);
+
   return (
     <Sidebar collapsible="icon">
       <SidebarContent>
@@ -105,7 +103,19 @@ export function AppSidebar() {
           <SidebarGroupLabel>Clients</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {clients.map((client) => (
+              {loading ? (
+                <SidebarMenuItem>
+                  <SidebarMenuButton>
+                    <span>Loading...</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ) : error ? (
+                <SidebarMenuItem>
+                  <SidebarMenuButton>
+                    <span>Error loading clients</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ) : clients.map((client) => (
                 <SidebarMenuItem key={client._id}>
                   <SidebarMenuButton asChild>
                     <Link href={`/clients/${client._id}`}>
@@ -119,22 +129,22 @@ export function AppSidebar() {
             </SidebarMenu>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton className={"hover:cursor-pointer"}>
-                  <Link href={"/exercises"} className="flex items-center">
+                <SidebarMenuButton className="hover:cursor-pointer">
+                  <Link href="/exercises" className="flex items-center">
                     <Dumbbell size={16} />
-                    <span className={"ml-2"}> Exercise list</span>
+                    <span className="ml-2">Exercise list</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              <Dialog>
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
-                  <SidebarMenuButton className={"hover:cursor-pointer"}>
+                  <SidebarMenuButton className="hover:cursor-pointer">
                     <Plus />
                     <span>Add a client</span>
                   </SidebarMenuButton>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
-                  <form onSubmit={createClient}>
+                  <form onSubmit={handleCreateClient}>
                     <DialogHeader>
                       <DialogTitle>Add client</DialogTitle>
                       <DialogDescription>
@@ -164,7 +174,7 @@ export function AppSidebar() {
                         />
                       </div>
                       <div className="grid gap-3">
-                        <Label htmlFor="email">email</Label>
+                        <Label htmlFor="email">Email</Label>
                         <Input
                           id="email"
                           name="email"
@@ -174,56 +184,62 @@ export function AppSidebar() {
                           onChange={(e) => setClientEmail(e.target.value)}
                         />
                       </div>
-                      <div className="flex gap-3">
+                      <div className="grid gap-3">
+                        <Label htmlFor="type">Client Type</Label>
                         <Select
                           value={clientType}
                           onValueChange={setClientType}
+                          required
                         >
-                          <div>
-                            <Label htmlFor="type" className={"mb-3"}>
-                              Client Type
-                            </Label>
-
-                            <SelectTrigger className="w-[180px]">
-                              <SelectValue placeholder="Select a type" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectGroup>
-                                <SelectLabel>Types</SelectLabel>
-                                <SelectItem value="inPerson">
-                                  in Person
-                                </SelectItem>
-                                <SelectItem value="online">online</SelectItem>
-                                <SelectItem value="hybrid">hybrid</SelectItem>
-                                <SelectItem value="bodybuilding">
-                                  bodybuilding
-                                </SelectItem>
-                                <SelectItem value="powerlifting">
-                                  powerlifting
-                                </SelectItem>
-                              </SelectGroup>
-                            </SelectContent>
-                          </div>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>Types</SelectLabel>
+                              <SelectItem value="inPerson">In Person</SelectItem>
+                              <SelectItem value="online">Online</SelectItem>
+                              <SelectItem value="hybrid">Hybrid</SelectItem>
+                              <SelectItem value="bodybuilding">Bodybuilding</SelectItem>
+                              <SelectItem value="powerlifting">Powerlifting</SelectItem>
+                            </SelectGroup>
+                          </SelectContent>
                         </Select>
-                        <div>
-                          <Label htmlFor="weight" className={"mb-3"}>
-                            weight (kg)
-                          </Label>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="grid gap-2">
+                          <Label htmlFor="weight">Current Weight (kg)</Label>
                           <Input
                             id="weight"
                             name="weight"
                             type="number"
                             min="0"
+                            step="0.1"
                             required
                             value={clientWeight}
                             onChange={(e) => setClientWeight(e.target.value)}
                           />
                         </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="goalWeight">Goal Weight (kg)</Label>
+                          <Input
+                            id="goalWeight"
+                            name="goalWeight"
+                            type="number"
+                            min="0"
+                            step="0.1"
+                            required
+                            value={clientGoalWeight}
+                            onChange={(e) => setClientGoalWeight(e.target.value)}
+                          />
+                        </div>
                       </div>
                     </div>
-                    <DialogFooter className={"mt-4"}>
-                      <DialogClose asChild>
-                        <Button variant="outline">Cancel</Button>
+                    <DialogFooter className="mt-4">
+                      <DialogClose ref={dialogCloseRef} asChild>
+                        <Button type="button" variant="outline" onClick={clearForm}>
+                          Cancel
+                        </Button>
                       </DialogClose>
                       <Button type="submit">Save changes</Button>
                     </DialogFooter>

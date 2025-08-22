@@ -4,6 +4,7 @@
 import { usePathname } from "next/navigation";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-siderbar";
+import { ClientProvider } from "@/context/ClientContext";
 
 export default function ClientLayout({ children }) {
   const pathname = usePathname();
@@ -14,6 +15,8 @@ export default function ClientLayout({ children }) {
   }
 
   return (
+    <ClientProvider>
+
     <SidebarProvider>
       <AppSidebar />
       <main className="w-full">
@@ -21,5 +24,6 @@ export default function ClientLayout({ children }) {
         {children}
       </main>
     </SidebarProvider>
+    </ClientProvider>
   );
 }

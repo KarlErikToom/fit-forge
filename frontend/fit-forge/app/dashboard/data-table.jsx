@@ -1,5 +1,4 @@
 "use client";
-import { useEffect, useState } from "react";
 import {
   flexRender,
   getCoreRowModel,
@@ -13,42 +12,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { columns } from "./columns"; // Import your columns
-import ApiClient from "@/lib/api";
+import { columns } from "./columns";
+import { useClients } from "@/context/ClientContext";
 
 export function DataTable() {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const api = new ApiClient();
-
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const clients = await api.getClients();
-      setData(clients);
-    } catch (err) {
-      setError(err.message || "Failed to fetch clients");
-      console.error("Failed to fetch clients:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-    window.refreshClientData = addClientToTable;
-  }
-    fetchData();
-  }, []);
-
-  const addClientToTable = (newClient) => {
-    setData((prev) => [...prev, newClient]);
-  };
+  const { clients, loading, error } = useClients();
 
   const table = useReactTable({
-    data,
+    data: clients,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
